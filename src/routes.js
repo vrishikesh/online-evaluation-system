@@ -6,6 +6,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks'
 import BubbleChart from '@material-ui/icons/BubbleChart'
 import LocationOn from '@material-ui/icons/LocationOn'
 import Notifications from '@material-ui/icons/Notifications'
+import ExamIcon from '@material-ui/icons/Edit'
 
 // core components/views for Admin layout
 const DashboardPage = lazy(() => import('./views/Dashboard/Dashboard'))
@@ -17,6 +18,7 @@ const Maps = lazy(() => import('./views/Maps/Maps'))
 const NotificationsPage = lazy(() =>
   import('./views/Notifications/Notifications')
 )
+const ExamPage = lazy(() => import('./views/ExamMaster/Stream'))
 
 const dashboardRoutes = [
   {
@@ -27,46 +29,53 @@ const dashboardRoutes = [
     layout: '/admin',
   },
   {
+    path: '/exam-master-collection',
+    name: 'Exam Master Collection',
+    icon: ExamIcon,
+    component: ExamPage,
+    layout: '/admin',
+  },
+  {
     path: '/user',
     name: 'User Profile',
     icon: Person,
     component: UserProfile,
-    layout: '/admin',
+    layout: '/admin1',
   },
   {
     path: '/table',
     name: 'Table List',
     icon: 'content_paste',
     component: TableList,
-    layout: '/admin',
+    layout: '/admin1',
   },
   {
     path: '/typography',
     name: 'Typography',
     icon: LibraryBooks,
     component: Typography,
-    layout: '/admin',
+    layout: '/admin1',
   },
   {
     path: '/icons',
     name: 'Icons',
     icon: BubbleChart,
     component: Icons,
-    layout: '/admin',
+    layout: '/admin1',
   },
   {
     path: '/maps',
     name: 'Maps',
     icon: LocationOn,
     component: Maps,
-    layout: '/admin',
+    layout: '/admin1',
   },
   {
     path: '/notifications',
     name: 'Notifications',
     icon: Notifications,
     component: NotificationsPage,
-    layout: '/admin',
+    layout: '/admin1',
   },
 ]
 

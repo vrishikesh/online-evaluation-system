@@ -23,16 +23,16 @@ let ps
 const switchRoutes = (
   <Switch>
     {routes.map((prop, key) => {
-      if (prop.layout === '/admin') {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            component={prop.component}
-            key={key}
-          />
-        )
-      }
-      return null
+      // if (prop.layout === '/admin') {
+      return (
+        <Route
+          path={prop.layout + prop.path}
+          component={prop.component}
+          key={key}
+        />
+      )
+      // }
+      // return null
     })}
     <Redirect from="/admin" to="/admin/dashboard" />
   </Switch>
@@ -96,7 +96,7 @@ export default function Admin({ ...rest }) {
     <div className={classes.wrapper}>
       <Sidebar
         routes={routes}
-        logoText={'Creative Tim'}
+        logoText={'OES'}
         logo={logo}
         image={image}
         handleDrawerToggle={handleDrawerToggle}
