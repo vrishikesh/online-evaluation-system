@@ -13,6 +13,7 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 // import DialogContentText from '@material-ui/core/DialogContentText'
+import { green } from '@material-ui/core/colors'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -20,6 +21,22 @@ import CustomInput from '../../components/CustomInput/CustomInput'
 import axios from '../../axios'
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative',
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
@@ -57,11 +74,14 @@ export default function() {
   const [open, setOpen] = useState(false)
   const [streams, setStreams] = useState([])
   const [streamName, setStreamName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [draw, setDraw] = useState(0)
   const [backdropOpen, setBackdropOpen] = useState(false)
   const classes = useStyles()
 
   useEffect(() => {
     ;(async () => {
+      setBackdropOpen(true)
       const response = await axios.get('/streams.json')
       if (response.status === 200 && response.data) {
         let newStreams = Object.entries(response.data).map(([key, record]) => {
@@ -76,43 +96,33 @@ export default function() {
         newStreams = newStreams.filter(_ => _ !== null)
         setStreams(newStreams)
       }
+      setBackdropOpen(false)
     })()
-  }, [streamName])
+  }, [draw])
 
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleBackdropClose = () => {
-    setBackdropOpen(false)
-  }
-
-  const handleBackdropToggle = () => {
-    setBackdropOpen(!backdropOpen)
-  }
-
-  const handleSave = e => {
-    handleClose()
-    handleBackdropToggle()
-    // axios
-    //   .post('/streams.json', {
-    //     streamName: streamName,
-    //   })
-    //   .then(res => {
-    //     console.log(res)
-    //     handleClose()
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   })
+  const handleSave = async () => {
+    setLoading(true)
+    try {
+      const response = await axios.post('/streams.json', { streamName })
+      console.log(response)
+      setOpen(false)
+      setDraw(draw + 1)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <GridContainer>
+      <Backdrop
+        className={classes.backdrop}
+        open={backdropOpen}
+        onClick={() => setBackdropOpen(false)}
+      >
+        <CircularProgress color="white" />
+      </Backdrop>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
           <CardHeader color="primary">
@@ -125,7 +135,7 @@ export default function() {
                 <Button
                   color="white"
                   className={'pull-right'}
-                  onClick={handleClickOpen}
+                  onClick={() => setOpen(true)}
                 >
                   Add Stream
                 </Button>
@@ -143,7 +153,7 @@ export default function() {
       </GridItem>
       <Dialog
         open={open}
-        onClose={handleClose}
+        onClose={() => setOpen(false)}
         aria-labelledby="form-dialog-title"
         fullWidth={true}
         maxWidth={'sm'}
@@ -165,23 +175,25 @@ export default function() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="danger">
+          <Button onClick={() => setOpen(false)} color="danger">
             Cancel
           </Button>
-          <Button onClick={handleSave} color="success">
-            Save
-          </Button>
+
+          <div className={classes.wrapper}>
+            <Button
+              variant="contained"
+              color={loading ? 'white' : 'success'}
+              disabled={loading}
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+            {loading && (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            )}
+          </div>
         </DialogActions>
       </Dialog>
-      <div>
-        <Backdrop
-          className={classes.backdrop}
-          open={backdropOpen}
-          onClick={handleBackdropClose}
-        >
-          <CircularProgress color="primary" />
-        </Backdrop>
-      </div>
     </GridContainer>
   )
 }
